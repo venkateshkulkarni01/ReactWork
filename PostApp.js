@@ -43,7 +43,7 @@ export default class App extends React.Component {
         formData.append('staffId', null);
         formData.append('govermentId', null);
      
-        fetch('https://api.pilot.principal.com/pisys_mob_account/quickPolicyInfo', {
+        fetch('https://api.pilot.xyz.com/pisys_mob_account/quickPolicyInfo', {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer Mi9qDv22EAiRnYA1fVX2DYlGDL3c',
