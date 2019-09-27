@@ -1,0 +1,158 @@
+import React from 'react';
+import axios from 'axios';
+import { Button, Text, View, StyleSheet } from 'react-native';
+
+import qs from 'qs';
+
+
+export default class App extends React.Component {
+
+  constructor(props) {
+    super(props),
+      this.state = {
+        text: [],
+        token: '',
+        policyDetails: [],
+      };
+      this._getToken=this._getToken.bind(this);
+      this._getPolicyDetails=this._getPolicyDetails.bind(this);
+      this.token=this.token.bind(this);
+  }
+
+  render() {
+
+    return (
+      <View style={styles.container}>
+        {/* <Button title="PolicyInfo" onPress={this._getPolicyInfo} />
+        {this.state.text.map(u => <Text key={u.staffId}> {u.staffId}</Text>)} */}
+
+        <Button title="PolicyDetails" onPress={this._getPolicyDetails} />
+        {this.state.policyDetails.map(u => <Text key={u.unitCnt}> {u.unitCnt}</Text>)} 
+        
+         <View style={styles.buttonStyle}>
+        <Button  title="Post Data" onPress={this._getToken} />
+        <Text >{this.state.token}</Text>
+        </View>
+      </View>
+    )
+  }
+
+
+
+  _getToken = async () => {
+    
+    var querystring = require('querystring');
+    axios.post('https://api.pilot.xyz.com/oauth-api/token/client',
+        querystring.stringify({
+          grant_type:'client_credentials'
+        }), {
+          headers: { 
+            "Content-Type": "application/x-www-form-urlencoded",
+            'Authorization': 'Basic aURSM3ZPT0VqUWJBZm1Bcko5V0JMcDdxQW9KR0FwQWg6c3UwVHFSVnBNaGdzT0dMcA==',
+            'Accept-Language': 'en-US',
+          }
+        }).then((response) =>{
+            console.log(response);
+            this.setState({ token: response.data.access_token})
+        }).catch(error => {
+          console.log(error.response)
+        });
+
+  }
+ 
+
+  _getPolicyDetails = async () => {
+  
+    //console.log(this.token);
+  
+    axios(
+      {
+        url: 'https://api.pilot.xyz.com/pisys_mob_account/getPolicyDetails',
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer 6RGQKmD19XZjLniSpQU93iZhg1Ep',
+          'Content-Type': 'application/json;charset=UTF-8',
+          'Accept-Language': 'En',
+          userName: 'zyx',
+        },
+        data: {
+
+          "clntRltnshpNmbr": 2618919,
+          "businessUnitNmbr": 1,
+          "effectiveDate": "07/07/2019",
+          "asOfDate": null,
+          "contractNmbr": null,
+          "policyDataFilter": { "investments": true }
+
+        }
+      }).then((response) => {
+        console.log(response.data);
+        this.setState({ policyDetails: response.data.policyAccountValueVOList })
+      })
+      .catch((error) => {
+        console.log(error)
+        this.setState({ policyDetails: 'error' })
+      });
+  }
+
+
+
+
+
+
+  _getPolicyInfo = async () => {
+    axios(
+      {
+        url: 'https://api.pilot.xyz.com/pisys_mob_account/quickPolicyInfo',
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer 6RGQKmD19XZjLniSpQU93iZhg1Ep',
+          'Content-Type': 'application/json;charset=UTF-8',
+          'Accept-Language': 'En',
+          userName: 'xyz',
+        },
+        data: {
+          "clientId": 1212,
+          "clntRltnshpNmbr": null,
+          "contractNmbr": null,
+          "externalContractNmbr": null,
+          "staffId": null,
+          "govermentId": null
+        }
+      }).then((response) => {
+        console.log(response.data);
+        this.setState({ text: response.data })
+      })
+      .catch((error) => {
+        console.log(error)
+        this.setState({ text: 'error' })
+      });
+  }
+
+
+
+
+
+
+}
+
+const styles = StyleSheet.create({
+
+buttonStyle:{
+paddingVertical:5
+},
+
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+});
+
+
